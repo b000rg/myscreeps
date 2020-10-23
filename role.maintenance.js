@@ -3,8 +3,7 @@ let roleMaintenance = {
     run: creep => {
         if (creep.memory.working) {
             if (!creep.memory.currentTarget) {
-                let targets = creep.room.find(FIND_STRUCTURES);
-                targets = _.filter(targets, structure => (
+                let targets = _.filter(creep.room.find(FIND_STRUCTURES), structure => (
                     (structure.my ||
                     structure.structureType === STRUCTURE_WALL) &&
                     structure.hits < structure.hitsMax
@@ -18,9 +17,9 @@ let roleMaintenance = {
                 delete creep.memory.currentTarget;
             };
         } else {
-            let sources = creep.room.find(FIND_SOURCES);
-            if (creep.harvest(sources[0]) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources[0], {visualizeStyle: {stroke: '#ffffffff'}});
+            let bestSource = creep.pos.findClosestByPath(FIND_SOURCES, {filter: source => source.energy && true});
+            if (creep.harvest(bestSource) === ERR_NOT_IN_RANGE) {
+                creep.moveTo(bestSource, {visualizeStyle: {stroke: '#ffffffff'}});
             } else if (!creep.store.getFreeCapacity(RESOURCE_ENERGY)) creep.memory.working = true;
         };
     }

@@ -7,9 +7,9 @@ let roleBuilder = {
                 creep.moveTo(targets[0], {visualizeStyle: {stroke: '#ffffffff'}});
             } else if (!creep.store.getUsedCapacity(RESOURCE_ENERGY)) creep.memory.building = false;
         } else {
-            let sources = creep.room.find(FIND_SOURCES);
-            if (creep.harvest(sources[0]) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources[0], {visualizeStyle: {stroke: '#ffffffff'}});
+            let bestSource = creep.pos.findClosestByPath(FIND_SOURCES, {filter: source => source.energy && true});
+            if (creep.harvest(bestSource) === ERR_NOT_IN_RANGE) {
+                creep.moveTo(bestSource, {visualizeStyle: {stroke: '#ffffffff'}});
             } else if (!creep.store.getFreeCapacity(RESOURCE_ENERGY)) creep.memory.building = true;
         };
     }
