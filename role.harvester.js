@@ -1,29 +1,48 @@
-let roleHarvester = {
-    /** @param {Creep} creep **/
-    run: creep => {
-        if (creep.store.getFreeCapacity(RESOURCE_ENERGY)) {
-            let sources = creep.room.find(FIND_SOURCES);
-            if (creep.harvest(sources[0]) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources[0], {visualizeStyle: {stroke: '#ffffffff'}});
-            };
+const { HARVESTING, TRANSPORTING } = require("userConstants");
+
+const harvesterParts = [MOVE, WORK, CARRY];
+
+const roleHarvester = {
+  /** @param {Creep} creep */
+  /** @param {Spawn} spawn */
+  spawn: function (spawn) {
+    return [
+      harvesterParts,
+      `harvester${Date.now() % 100000}`,
+      {
+        memory: {
+          role: "harvester",
+          doing: TRANSPORTING,
+          originSpawn: spawn.id,
+          target: spawn.id,
+        },
+      },
+    ];
+  },
+
+  /** @param {Creep} creep */
+  run: function (creep) {
+    let target = Game.getObjectById(creep.memory.target);
+    switch (creep.memory.doing) {
+      case HARVESTING:
+        if (creep.store.getFreeCapacity()) {
+          if (creep.harvest(target) === ERR_NOT_IN_RANGE) creep.moveTo(target);
         } else {
-            let targets = creep.room.find(FIND_STRUCTURES, {
-                filter: structure => {
-                    return (
-                        (structure.structureType === STRUCTURE_SPAWN ||
-                        structure.structureType === STRUCTURE_EXTENSION ||
-                        structure.structureType === STRUCTURE_CONTAINER) &&
-                        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-                    );
-                }
-            });
-            if (targets) {
-                if (creep.transfer(targets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(targets[0], {visualizeStyle: {stroke: '#ffffffff'}});
-                };
-            };
-        };
+          creep.memory.target = creep.memory.originSpawn;
+          creep.memory.doing = TRANSPORTING;
+        }
+        break;
+      case TRANSPORTING:
+        if (creep.store.getUsedCapacity()) {
+          if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE)
+            creep.moveTo(target);
+        } else {
+          creep.memory.target = creep.pos.findClosestByPath(FIND_SOURCES).id;
+          creep.memory.doing = HARVESTING;
+        }
+        break;
     }
+  },
 };
 
 module.exports = roleHarvester;

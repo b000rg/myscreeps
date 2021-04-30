@@ -1,74 +1,46 @@
-let roleHarvester = require('role.harvester');
-let roleUpgrader = require('role.upgrader');
-let roleBuilder = require('role.builder');
-let roleMaintenance = require('role.maintenance');
+const roleHarvester = require("role.harvester");
 
+// lookup table for role execution from creep memory
+const roleDefinitions = { harvester: roleHarvester };
 
+// tries to keep at least this many of each role in the game
+const roleQuotas = { harvester: 3 };
 
-// lookup table for role execution
-const roleDefinitions = {
-	harvester: roleHarvester,
-	upgrader: roleUpgrader,
-	builder: roleBuilder,
-	maintenance: roleMaintenance
+// don't want to pay for the sins of our fathers
+const eraseDeadCreepsMemory = () => {
+  for (creep in Memory.creeps)
+    if (!Game.creeps[creep]) {
+      console.log("☠ Can't find " + creep + ". Clearing memory.");
+      delete Memory.creeps[creep];
+    }
 };
 
-// target number of creeps for each role
-const roleQuotas = {
-	harvester: 3,
-	upgrader: 2,
-	builder: 2,
-	maintenance: 5
+// checks if role quotas have been reached
+const countCreeps = (creeps, quotas = roleQuotas) => {
+  const creepCount = {};
+  for (creep of creeps) {
+    if (!creepCount[creep.memory.role]++) creepCount[creep.memory.role] = 1;
+  }
+  for (role in quotas) {
+    if (creepCount[role] !== quotas[role]) return role;
+  }
+  return null;
 };
-
-// body part lists for each role
-const roleBodies = {
-	harvester: [WORK, CARRY, MOVE],
-	upgrader: [WORK, CARRY, MOVE],
-	builder: [WORK, CARRY, MOVE],
-	maintenance: [WORK, CARRY, MOVE]
-};
-
-
-
-const findNeededRole = () => {
-	const currentCounts = {};
-	for (let name in Game.creeps) {
-		let role = Game.creeps[name].memory.role;
-		if (currentCounts[role]) currentCounts[role]++
-		else currentCounts[role] = 1;
-	};
-	for (let role in roleQuotas) {
-		if ((currentCounts[role] || 0) < roleQuotas[role]) return role;
-	};
-	return null;
-};
-
-const clearDeadCreepsMemory = () => {
-	for (let name in Memory.creeps) {
-		if (!Game.creeps[name]) {
-			console.log(`${name} cannot be found. Freeing memory.`);
-			delete Memory.creeps[name];
-		};
-	};
-};
-
-/** @param {Creep} creep **/
-const executeRole = (creep) => {
-	roleDefinitions[creep.memory.role].run(creep);
-};
-
-
 
 module.exports.loop = () => {
-	clearDeadCreepsMemory();
+  eraseDeadCreepsMemory();
 
-	let neededRole = findNeededRole();
-	if (neededRole) {
-		Game.spawns['Spawn1'].spawnCreep(roleBodies[neededRole], neededRole + Game.time, {memory: {role: neededRole}});
-	};
+  let deficitRole = countCreeps(
+    Game.spawns["Spawn1"].room.find(FIND_MY_CREEPS)
+  );
+  if (deficitRole) {
+    Game.spawns["Spawn1"].spawnCreep(
+      ...roleDefinitions[deficitRole].spawn(Game.spawns["Spawn1"])
+    );
+  }
 
-	for (let name in Game.creeps) {
-		executeRole(Game.creeps[name]);
-	};
+  for (creep in Game.creeps) {
+    if (Game.creeps[creep].memory.role)
+      roleDefinitions[Game.creeps[creep].memory.role].run(Game.creeps[creep]);
+  }
 };
