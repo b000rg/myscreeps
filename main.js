@@ -40,6 +40,7 @@ module.exports.loop = () => {
   }
 
   for (creep in Game.creeps) {
-    roleDefinitions[Game.creeps[creep].memory.role].run(Game.creeps[creep]);
+    if (Game.creeps[creep].memory.role)
+      roleDefinitions[Game.creeps[creep].memory.role].run(Game.creeps[creep]);
   }
 };
