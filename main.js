@@ -1,10 +1,11 @@
 const roleHarvester = require("role.harvester");
+const roleUpgrader = require("role.upgrader");
 
 // lookup table for role execution from creep memory
-const roleDefinitions = { harvester: roleHarvester };
+const roleDefinitions = { harvester: roleHarvester, upgrader: roleUpgrader };
 
 // tries to keep at least this many of each role in the game
-const roleQuotas = { harvester: 3 };
+const roleQuotas = { harvester: 3, upgrader: 2 };
 
 // don't want to pay for the sins of our fathers
 const eraseDeadCreepsMemory = () => {

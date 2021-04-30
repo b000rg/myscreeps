@@ -1,2 +1,3 @@
 module.exports.HARVESTING = "HARVESTING";
-module.exports.TRANSPORTING = "TRANSPORTING";
+module.exports.DELIVERING = "DELIVERING";
+module.exports.UPGRADING = "UPGRADING";
