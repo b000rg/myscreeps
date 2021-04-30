@@ -27,9 +27,8 @@ const countCreeps = (creeps, quotas = roleQuotas) => {
   return null;
 };
 
-module.exports.loop = () => {
-  eraseDeadCreepsMemory();
-
+// figure out if role quotas are met and spawns creeps with necessary role
+const spawnNecessaryCreeps = () => {
   let deficitRole = countCreeps(
     Game.spawns["Spawn1"].room.find(FIND_MY_CREEPS)
   );
@@ -38,9 +37,21 @@ module.exports.loop = () => {
       ...roleDefinitions[deficitRole].spawn(Game.spawns["Spawn1"])
     );
   }
+};
+// TODO: Add role spawn priorities
+// TODO: Add parameter for StructureSpawn
 
+// run role AI on all creeps
+const runCreeps = () => {
   for (creep in Game.creeps) {
     if (Game.creeps[creep].memory.role)
       roleDefinitions[Game.creeps[creep].memory.role].run(Game.creeps[creep]);
   }
+};
+//TODO: CLean up this mess
+
+module.exports.loop = () => {
+  eraseDeadCreepsMemory();
+  spawnNecessaryCreeps();
+  runCreeps();
 };
