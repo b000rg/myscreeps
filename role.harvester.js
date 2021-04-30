@@ -1,4 +1,5 @@
 const { HARVESTING, DELIVERING } = require("userConstants");
+const { storeIsFull, storeIsEmpty } = require("helperFunctions");
 
 const harvesterParts = [MOVE, WORK, CARRY];
 
@@ -26,20 +27,23 @@ const roleHarvester = {
     let target = Game.getObjectById(creep.memory.target);
     switch (creep.memory.doing) {
       case HARVESTING:
-        if (creep.store.getFreeCapacity()) {
-          if (creep.harvest(target) === ERR_NOT_IN_RANGE) creep.moveTo(target);
-        } else {
-          creep.memory.target = creep.memory.originSpawn;
+        if (storeIsFull(creep.store)) {
           creep.memory.doing = DELIVERING;
+          creep.memory.target = creep.memory.originSpawn;
+        } else {
+          if (creep.harvest(target) === ERR_NOT_IN_RANGE) {
+            creep.moveTo(target);
+          }
         }
         break;
       case DELIVERING:
-        if (creep.store.getUsedCapacity()) {
-          if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE)
-            creep.moveTo(target);
-        } else {
-          creep.memory.target = creep.pos.findClosestByPath(FIND_SOURCES).id;
+        if (storeIsEmpty(creep.store)) {
           creep.memory.doing = HARVESTING;
+          creep.memory.target = creep.pos.findClosestByPath(FIND_SOURCES).id;
+        } else {
+          if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+            creep.moveTo(target);
+          }
         }
         break;
     }
