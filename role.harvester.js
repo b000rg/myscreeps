@@ -1,10 +1,11 @@
-const { HARVESTING, TRANSPORTING } = require("userConstants");
+const { HARVESTING, DELIVERING } = require("userConstants");
 
 const harvesterParts = [MOVE, WORK, CARRY];
 
 const roleHarvester = {
-  /** @param {Creep} creep */
-  /** @param {Spawn} spawn */
+  /**
+   * Generate spawn arguments for creep
+   * @param {Spawn} spawn - StructureSpawn that will be spawning creep */
   spawn: function (spawn) {
     return [
       harvesterParts,
@@ -12,7 +13,7 @@ const roleHarvester = {
       {
         memory: {
           role: "harvester",
-          doing: TRANSPORTING,
+          doing: DELIVERING,
           originSpawn: spawn.id,
           target: spawn.id,
         },
@@ -29,10 +30,10 @@ const roleHarvester = {
           if (creep.harvest(target) === ERR_NOT_IN_RANGE) creep.moveTo(target);
         } else {
           creep.memory.target = creep.memory.originSpawn;
-          creep.memory.doing = TRANSPORTING;
+          creep.memory.doing = DELIVERING;
         }
         break;
-      case TRANSPORTING:
+      case DELIVERING:
         if (creep.store.getUsedCapacity()) {
           if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE)
             creep.moveTo(target);
