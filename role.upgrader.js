@@ -20,7 +20,7 @@ const roleUpgrader = {
 
   run: function (creep) {
     let target = Game.getObjectById(creep.memory.target);
-    switch (creep.doing) {
+    switch (creep.memory.doing) {
       case HARVESTING:
         if (storeIsFull(creep.store)) {
           creep.memory.doing = UPGRADING;
