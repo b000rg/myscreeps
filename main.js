@@ -1,11 +1,16 @@
 const roleHarvester = require("role.harvester");
 const roleUpgrader = require("role.upgrader");
+const roleBuilder = require("role.builder");
 
 // lookup table for role execution from creep memory
-const roleDefinitions = { harvester: roleHarvester, upgrader: roleUpgrader };
+const roleDefinitions = {
+  harvester: roleHarvester,
+  upgrader: roleUpgrader,
+  builder: roleBuilder,
+};
 
 // tries to keep at least this many of each role in the game
-const roleQuotas = { harvester: 3, upgrader: 2 };
+const roleQuotas = { harvester: 3, upgrader: 2, builder: 2 };
 
 // don't want to pay for the sins of our fathers
 const eraseDeadCreepsMemory = () => {
@@ -34,9 +39,12 @@ const spawnNecessaryCreeps = () => {
     Game.spawns["Spawn1"].room.find(FIND_MY_CREEPS)
   );
   if (deficitRole) {
-    Game.spawns["Spawn1"].spawnCreep(
-      ...roleDefinitions[deficitRole].spawn(Game.spawns["Spawn1"])
-    );
+    if (
+      !Game.spawns["Spawn1"].spawnCreep(
+        ...roleDefinitions[deficitRole].spawn(Game.spawns["Spawn1"])
+      )
+    )
+      console.log(`Spawning ${deficitRole}.`);
   }
 };
 // TODO: Add role spawn priorities
