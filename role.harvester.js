@@ -4,7 +4,7 @@ const { storeIsFull, storeIsEmpty } = require("helperFunctions");
 const harvesterParts = [MOVE, MOVE, WORK, CARRY];
 
 const findBestStorageSite = (creep) => {
-  let myStructures = creep.room.find(MY_STRUCTURES);
+  let myStructures = creep.room.find(FIND_MY_STRUCTURES);
   let spawnsAndExtensions = myStructures.filter(
     (struct) =>
       struct.structureType === STRUCTURE_SPAWN ||
@@ -16,11 +16,13 @@ const findBestStorageSite = (creep) => {
       struct.structureType === STRUCTURE_STORAGE
   );
 
-  for (spawn in spawnsAndExtensions) {
-    if (!storeIsFull(spawn.store)) return spawn.id;
+  for (let i = 0; i < spawnsAndExtensions.length; i++) {
+    if (!storeIsFull(spawnsAndExtensions[i].store, RESOURCE_ENERGY))
+      return spawnsAndExtensions[i].id;
   }
-  for (container in containersAndStorage) {
-    if (!storeIsFull(container.store)) return container.id;
+  for (let i = 0; i < containersAndStorage.length; i++) {
+    if (!storeIsFull(containersAndStorage[i].store, RESOURCE_ENERGY))
+      return containersAndStorage[i].id;
   }
   return null;
 };

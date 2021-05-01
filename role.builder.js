@@ -23,10 +23,11 @@ const roleBuilder = {
     switch (creep.memory.doing) {
       case HARVESTING:
         if (storeIsFull(creep.store)) {
-          creep.memory.doing = BUILDING;
-          creep.memory.target = creep.room.find(
-            FIND_MY_CONSTRUCTION_SITES
-          )[0].id;
+          let newTarget = creep.room.find(FIND_MY_CONSTRUCTION_SITES)[0];
+          if (newTarget) {
+            creep.memory.doing = BUILDING;
+            creep.memory.target = newTarget.id;
+          }
         } else {
           if (creep.harvest(target) === ERR_NOT_IN_RANGE) {
             creep.moveTo(target);
@@ -35,8 +36,11 @@ const roleBuilder = {
         break;
       case BUILDING:
         if (storeIsEmpty(creep.store)) {
-          creep.memory.doing = HARVESTING;
-          creep.memory.target = creep.pos.findClosestByPath(FIND_SOURCES).id;
+          let newTarget = creep.pos.findClosestByPath(FIND_SOURCES);
+          if (newTarget) {
+            creep.memory.doing = HARVESTING;
+            creep.memory.target = newTarget.id;
+          }
         } else {
           Game.map.visual.text("🔨", target.pos);
           if (creep.build(target) === ERR_NOT_IN_RANGE) {

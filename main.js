@@ -57,7 +57,12 @@ const spawnNecessaryCreeps = () => {
 const runCreeps = () => {
   for (creep in Game.creeps) {
     if (Game.creeps[creep].memory.role)
-      roleDefinitions[Game.creeps[creep].memory.role].run(Game.creeps[creep]);
+      try {
+        roleDefinitions[Game.creeps[creep].memory.role].run(Game.creeps[creep]);
+      } catch (err) {
+        console.log(`Error while trying to run ${creep}:\r`);
+        console.log(err);
+      }
   }
 };
 //TODO: CLean up this mess
