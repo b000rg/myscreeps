@@ -3,6 +3,28 @@ const { storeIsFull, storeIsEmpty } = require("helperFunctions");
 
 const harvesterParts = [MOVE, WORK, CARRY];
 
+const findBestStorageSite = (creep) => {
+  let myStructures = creep.room.find(MY_STRUCTURES);
+  let spawnsAndExtensions = myStructures.filter(
+    (struct) =>
+      struct.structureType === STRUCTURE_SPAWN ||
+      struct.structureType === STRUCTURE_EXTENSION
+  );
+  let containersAndStorage = myStructures.filter(
+    (struct) =>
+      struct.structureType === STRUCTURE_CONTAINER ||
+      struct.structureType === STRUCTURE_STORAGE
+  );
+
+  for (spawn in spawnsAndExtensions) {
+    if (!storeIsFull(spawn.store)) return spawn.id;
+  }
+  for (container in containersAndStorage) {
+    if (!storeIsFull(container.store)) return container.id;
+  }
+  return null;
+};
+
 const roleHarvester = {
   /**
    * Generate spawn arguments for creep
@@ -28,8 +50,8 @@ const roleHarvester = {
     switch (creep.memory.doing) {
       case HARVESTING:
         if (storeIsFull(creep.store)) {
-          creep.memory.doing = DELIVERING;
-          creep.memory.target = creep.memory.originSpawn;
+          creep.memory.target = findBestStorageSite(creep);
+          if (creep.memory.target) creep.memory.doing = DELIVERING;
         } else {
           if (creep.harvest(target) === ERR_NOT_IN_RANGE) {
             creep.moveTo(target);
