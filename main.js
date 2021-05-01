@@ -10,7 +10,11 @@ const roleDefinitions = {
 };
 
 // tries to keep at least this many of each role in the game
-const roleQuotas = { harvester: 3, upgrader: 2, builder: 2 };
+const roleQuotas = [
+  { roleName: harvester, quota: 3 },
+  { roleName: upgrader, quota: 2 },
+  { roleName: builder, quota: 2 },
+];
 
 // don't want to pay for the sins of our fathers
 const eraseDeadCreepsMemory = () => {
@@ -27,8 +31,8 @@ const countCreeps = (creeps, quotas = roleQuotas) => {
   for (creep of creeps) {
     if (!creepCount[creep.memory.role]++) creepCount[creep.memory.role] = 1;
   }
-  for (role in quotas) {
-    if (creepCount[role] !== quotas[role]) return role;
+  for (role of quotas) {
+    if (creepCount[role.roleName] !== role.quota) return role.roleName;
   }
   return null;
 };
@@ -47,7 +51,6 @@ const spawnNecessaryCreeps = () => {
       console.log(`Spawning ${deficitRole}.`);
   }
 };
-// TODO: Add role spawn priorities
 // TODO: Add parameter for StructureSpawn
 
 // run role AI on all creeps
