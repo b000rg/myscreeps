@@ -32,7 +32,8 @@ const countCreeps = (creeps, quotas = roleQuotas) => {
     if (!creepCount[creep.memory.role]++) creepCount[creep.memory.role] = 1;
   }
   for (role of quotas) {
-    if (creepCount[role.roleName] !== role.quota) return role.roleName;
+    console.log(`${role.roleName}: ${creepCount[role.roleName]}/${role.quota}`);
+    if (creepCount[role.roleName] < role.quota) return role.roleName;
   }
   return null;
 };
@@ -43,6 +44,7 @@ const spawnNecessaryCreeps = () => {
     Game.spawns["Spawn1"].room.find(FIND_MY_CREEPS)
   );
   if (deficitRole) {
+    console.log(`deficit: ${deficitRole}`);
     if (
       !Game.spawns["Spawn1"].spawnCreep(
         ...roleDefinitions[deficitRole].spawn(Game.spawns["Spawn1"])
