@@ -24,7 +24,7 @@ const findBestStorageSite = (creep) => {
     if (!storeIsFull(containersAndStorage[i].store, RESOURCE_ENERGY))
       return containersAndStorage[i].id;
   }
-  return null;
+  return creep.memory.originSpawn;
 };
 
 const roleHarvester = {
