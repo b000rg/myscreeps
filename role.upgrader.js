@@ -1,7 +1,7 @@
 const { HARVESTING, UPGRADING } = require("userConstants");
 const { storeIsEmpty, storeIsFull } = require("helperFunctions");
 
-const upgraderParts = [WORK, CARRY, MOVE];
+const upgraderParts = [WORK, CARRY, MOVE, MOVE];
 
 const roleUpgrader = {
   spawn: function () {

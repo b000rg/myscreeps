@@ -1,7 +1,7 @@
 const { HARVESTING, BUILDING } = require("userConstants");
 const { storeIsFull, storeIsEmpty } = require("helperFunctions");
 
-const builderParts = [WORK, CARRY, MOVE];
+const builderParts = [WORK, CARRY, MOVE, MOVE];
 
 const roleBuilder = {
   spawn: function () {

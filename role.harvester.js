@@ -1,7 +1,7 @@
 const { HARVESTING, DELIVERING } = require("userConstants");
 const { storeIsFull, storeIsEmpty } = require("helperFunctions");
 
-const harvesterParts = [MOVE, WORK, CARRY];
+const harvesterParts = [MOVE, MOVE, WORK, CARRY];
 
 const findBestStorageSite = (creep) => {
   let myStructures = creep.room.find(MY_STRUCTURES);
