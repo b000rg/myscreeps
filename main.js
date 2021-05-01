@@ -1,12 +1,14 @@
 const roleHarvester = require("role.harvester");
 const roleUpgrader = require("role.upgrader");
 const roleBuilder = require("role.builder");
+const roleMaintainer = require("role.maintainer");
 
 // lookup table for role execution from creep memory
 const roleDefinitions = {
   harvester: roleHarvester,
   upgrader: roleUpgrader,
   builder: roleBuilder,
+  maintainer: roleMaintainer,
 };
 
 // tries to keep at least this many of each role in the game
@@ -14,6 +16,7 @@ const roleQuotas = [
   { roleName: "harvester", quota: 4 },
   { roleName: "upgrader", quota: 3 },
   { roleName: "builder", quota: 5 },
+  { roleName: "maintainer", quota: 4 },
 ];
 
 // don't want to pay for the sins of our fathers
@@ -32,8 +35,10 @@ const countCreeps = (creeps, quotas = roleQuotas) => {
     if (!creepCount[creep.memory.role]++) creepCount[creep.memory.role] = 1;
   }
   for (role of quotas) {
-    console.log(`${role.roleName}: ${creepCount[role.roleName]}/${role.quota}`);
-    if (creepCount[role.roleName] < role.quota) return role.roleName;
+    console.log(
+      `${role.roleName}: ${creepCount[role.roleName] || 0}/${role.quota}`
+    );
+    if ((creepCount[role.roleName] || 0) < role.quota) return role.roleName;
   }
   return null;
 };
