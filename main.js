@@ -11,7 +11,7 @@ const roleDefinitions = {
 
 // tries to keep at least this many of each role in the game
 const roleQuotas = [
-  { roleName: "harvester", quota: 6 },
+  { roleName: "harvester", quota: 4 },
   { roleName: "upgrader", quota: 3 },
   { roleName: "builder", quota: 5 },
 ];
